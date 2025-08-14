@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Главная — Deutsch Lernen{% endblock %}
+{% block content %}
+  <h1>Добро пожаловать!</h1>
+  <p>Здесь мы изучаем немецкий язык: уроки, слова и примеры.</p>
+
+  <h2>Последние уроки</h2>
+  <ul>
+    {% for lesson in latest %}
+      <li><a href="{% url 'courses:lesson_detail' slug=lesson.slug %}">{{ lesson.title }}</a></li>
+    {% empty %}
+      <li>Пока нет уроков.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

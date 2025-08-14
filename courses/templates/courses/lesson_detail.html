@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — Deutsch Lernen{% endblock %}
+{% block content %}
+  <h1>{{ lesson.title }}</h1>
+  {% if lesson.description %}<p>{{ lesson.description }}</p>{% endif %}
+
+  <h2>Слова</h2>
+  <table>
+    <thead>
+      <tr><th>Немецкий</th><th>Перевод</th><th>Пример</th></tr>
+    </thead>
+    <tbody>
+      {% for w in lesson.words.all %}
+        <tr>
+          <td><strong>{{ w.german }}</strong></td>
+          <td>{{ w.translation }}</td>
+          <td>{% if w.example %}{{ w.example }}{% else %}—{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">Слова ещё не добавлены.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

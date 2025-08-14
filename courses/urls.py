@@ -1,0 +1,11 @@
+# courses/urls.py
+from django.urls import path
+from . import views
+
+app_name = "courses"
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("lessons/", views.lesson_list, name="lesson_list"),
+    path("lessons/<slug:slug>/", views.lesson_detail, name="lesson_detail"),
+]
