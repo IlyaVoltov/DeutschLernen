@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Тест: Перевод примера — {{ lesson.title }}{% endblock %}
+{% block content %}
+  <a href="javascript:history.back()" style="display:inline-block;margin-bottom:1rem;">← Назад</a>
+  <h1>Тест по переводу примера</h1>
+  {% if error %}
+    <p>{{ error }}</p>
+  {% else %}
+    <p>Введите по-немецки фразу для перевода:</p>
+    <div style="margin-bottom:1rem;">
+      <strong>{{ word.example_translation }}</strong>
+    </div>
+    <input type="text" id="answer" style="width:100%;max-width:400px;">
+    <button onclick="checkExample()">Проверить</button>
+    <p id="result"></p>
+    <script>
+      function checkExample() {
+        const userInput = document.getElementById('answer').value.trim();
+        const correct = "{{ word.example|escapejs }}";
+        const result = document.getElementById('result');
+        if (userInput === correct) {
+          result.textContent = "Верно!";
+          result.style.color = "green";
+        } else {
+          result.textContent = "Неверно! Правильный ответ: " + correct;
+          result.style.color = "red";
+        }
+      }
+    </script>
+  {% endif %}
+{% endblock %}

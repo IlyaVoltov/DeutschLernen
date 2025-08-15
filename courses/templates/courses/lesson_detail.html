@@ -2,34 +2,82 @@
 {% block title %}{{ lesson.title }} — Deutsch Lernen{% endblock %}
 {% block content %}
   <h1>{{ lesson.title }}</h1>
-  {% if lesson.description %}<p>{{ lesson.description }}</p>{% endif %}
+  {% if lesson.description %}
+    <p>{{ lesson.description }}</p>
+  {% endif %}
 
   <h2>Слова</h2>
   <table>
     <thead>
       <tr>
+        <th>#</th>
         <th>Немецкий</th>
         <th>Перевод</th>
-        <th>Часть речи</th>
         <th>Пример</th>
-        <th>Перевод примера</th>
+        <th>Часть речи</th>
       </tr>
     </thead>
-    <!-- наполнение таблицы словами из БД -->
     <tbody>
       {% for w in lesson.words.all %}
         <tr>
+          <td>{{ forloop.counter }}</td>
           <td><strong>{{ w.german }}</strong></td>
           <td>{{ w.translation }}</td>
+          <td>
+            {% if w.example %}
+              <a href="#"
+                 onclick="showModal('{{ w.example|escapejs }}', '{{ w.transcription|escapejs }}', '{{ w.example_translation|escapejs }}'); return false;">
+                {{ w.example }}
+              </a>
+            {% else %}
+              —
+            {% endif %}
+          </td>
           <td>{{ w.part_of_speech|default:"—" }}</td>
-          <td>{{ w.example|default:"—" }}</td>
-          <td>{{ w.example_translation|default:"—" }}</td>
         </tr>
       {% empty %}
-        <tr><td colspan="5">Слова ещё не добавлены.</td></tr>
+        <tr><td colspan="6">Слова ещё не добавлены.</td></tr>
       {% endfor %}
     </tbody>
   </table>
-  <!-- ссылка на тест со словами -->
-  <a href="{% url 'courses:lesson_quiz' slug=lesson.slug %}">Пройти тест по словам</a>
+
+  <!-- Тест по словам -->
+  <div id="lesson_quiz" class="lesson-quiz">
+    <h2>Тесты</h2>
+    <p>Проверьте свои знания:</p>
+    <a href="{% url 'courses:lesson_quiz' slug=lesson.slug %}">Пройти тест по словам</a>
+  </div>
+
+  <!-- Тест с переводом примера -->
+  <div id="lesson_example_quiz" class="lesson-example-quiz">
+    <h2>Тесты с примерами</h2>
+    <p>Проверьте перевод примеров:</p>
+    <a href="{% url 'courses:lesson_example_quiz' slug=lesson.slug %}">Тест: перевести пример</a>
+  </div>
+
+  <!-- Модальное окно -->
+  <div id="modal-overlay" class="modal-overlay" onclick="closeModal()"></div>
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h3 id="modal-title">Детали примера</h3>
+    <div id="modal-content"></div>
+    <button type="button" class="close-btn" onclick="closeModal()">Закрыть</button>
+  </div>
+
+  <script>
+    function showModal(example, transcription, translation) {
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <p><strong>Пример:</strong> ${example}</p>
+        <p><strong>Транскрипция:</strong> ${transcription}</p>
+        <p><strong>Перевод:</strong> ${translation}</p>
+      `;
+      document.getElementById('modal').style.display = 'block';
+      document.getElementById('modal-overlay').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('modal-overlay').style.display = 'none';
+    }
+  </script>
 {% endblock %}

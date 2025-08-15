@@ -27,6 +27,18 @@ def lesson_quiz(request, slug):
     correct_word = random.choice(selected)
     return render(request, "courses/lesson_quiz.html", {
         "lesson": lesson,
-        "words": selected,
+        "words": words,
         "correct": correct_word
+    })
+
+# функция для теста перевода примера
+def lesson_example_quiz(request, slug):
+    lesson = get_object_or_404(Lesson, slug=slug, published=True)
+    words = list(lesson.words.exclude(example="", example_translation=""))
+    if not words:
+        return render(request, "courses/lesson_example_quiz.html", {"lesson": lesson, "error": "Нет примеров для теста."})
+    word = random.choice(words)
+    return render(request, "courses/lesson_example_quiz.html", {
+        "lesson": lesson,
+        "word": word,
     })

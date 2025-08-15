@@ -1,28 +1,67 @@
 {% extends "base.html" %}
 {% block title %}Тест — {{ lesson.title }}{% endblock %}
 {% block content %}
+  <!-- кнопка назаж -->
+  <a href="javascript:history.back()" style="display:inline-block;margin-bottom:1rem;">← Назад</a>
+  <!-- заголовок теста -->
   <h1>Тест по уроку: {{ lesson.title }}</h1>
-  {% if error %}
-    <p>{{ error }}</p>
-  {% else %}
-    <p>Выберите правильный перевод для слова <strong>{{ correct.german }}</strong>:</p>
-    <ul>
+  <p id="score">Верных ответов: 0 из 10</p>
+  <div id="quiz"></div>
+  <p id="result"></p>
+  <script>
+    // Получаем слова из Django в виде JS-массива
+    const words = [
       {% for word in words %}
-        <li>
-            <button onclick="checkAnswer('{{ word.translation }}', '{{ correct.translation }}')">{{ word.translation }}</button>
-        </li>
+        {german: "{{ word.german }}", translation: "{{ word.translation }}"},
       {% endfor %}
-    </ul>
-    <p id="result"></p>
-    <script>
-      function checkAnswer(selected, correct) {
-        const result = document.getElementById('result');
-        if (selected === correct) {
-          result.textContent = "Верно!";
-        } else {
-          result.textContent = "Неверно!";
-        }
+    ];
+    let score = 0;
+
+    function getRandomWords() {
+      // Выбираем 2 случайных слова
+      let shuffled = words.sort(() => 0.5 - Math.random());
+      let selected = shuffled.slice(0, 2);
+      // Выбираем одно из них как правильное
+      let correct = selected[Math.floor(Math.random() * 2)];
+      return {selected, correct};
+    }
+
+    function showQuiz() {
+        if (score >= 10) {
+            document.getElementById('quiz').innerHTML = `
+                <strong>Поздравляем! Только настоящий кот может набрать 10 верных ответов!</strong>
+                <br>
+                <img src="/static/images/winnerCat.jpg" alt="Победный кот" style="max-width:300px;margin-top:1rem;">
+                `;
+            return;
+  }
+      const {selected, correct} = getRandomWords();
+      document.getElementById('quiz').innerHTML = `
+        <p>Выберите правильный перевод для слова <strong>${correct.german}</strong>:</p>
+        <ul>
+          ${selected.map(word => `<li><button onclick="checkAnswer('${word.translation}', '${correct.translation}')">${word.translation}</button></li>`).join('')}
+        </ul>
+      `;
+      // Сохраняем правильный ответ для проверки
+      window.currentCorrect = correct.translation;
+    }
+
+    function checkAnswer(selected, correct) {
+      const result = document.getElementById('result');
+      if (selected === correct) {
+        score++;
+        document.getElementById('score').textContent = `Верных ответов: ${score} из 10`;
+        result.textContent = "Верно!";
+      } else {
+        result.textContent = "Неверно!";
       }
-    </script>
-  {% endif %}
+      setTimeout(() => {
+        result.textContent = "";
+        showQuiz();
+      }, 1000);
+    }
+
+    // Показываем первый вопрос
+    showQuiz();
+  </script>
 {% endblock %}

@@ -31,6 +31,7 @@ class Word(models.Model):
     part_of_speech = models.CharField("Часть речи", max_length=50, blank=True)
     example = models.CharField("Пример", max_length=250, blank=True)
     example_translation = models.CharField("Перевод примера", max_length=250, blank=True)
+    transcription = models.CharField("Транскрипция", max_length=250, blank=True)
 
     class Meta:
         ordering = ["german"]
