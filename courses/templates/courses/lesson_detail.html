@@ -7,18 +7,29 @@
   <h2>Слова</h2>
   <table>
     <thead>
-      <tr><th>Немецкий</th><th>Перевод</th><th>Пример</th></tr>
+      <tr>
+        <th>Немецкий</th>
+        <th>Перевод</th>
+        <th>Часть речи</th>
+        <th>Пример</th>
+        <th>Перевод примера</th>
+      </tr>
     </thead>
+    <!-- наполнение таблицы словами из БД -->
     <tbody>
       {% for w in lesson.words.all %}
         <tr>
           <td><strong>{{ w.german }}</strong></td>
           <td>{{ w.translation }}</td>
-          <td>{% if w.example %}{{ w.example }}{% else %}—{% endif %}</td>
+          <td>{{ w.part_of_speech|default:"—" }}</td>
+          <td>{{ w.example|default:"—" }}</td>
+          <td>{{ w.example_translation|default:"—" }}</td>
         </tr>
       {% empty %}
-        <tr><td colspan="3">Слова ещё не добавлены.</td></tr>
+        <tr><td colspan="5">Слова ещё не добавлены.</td></tr>
       {% endfor %}
     </tbody>
   </table>
+  <!-- ссылка на тест со словами -->
+  <a href="{% url 'courses:lesson_quiz' slug=lesson.slug %}">Пройти тест по словам</a>
 {% endblock %}

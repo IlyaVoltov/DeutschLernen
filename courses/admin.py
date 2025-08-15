@@ -5,6 +5,7 @@ from .models import Lesson, Word
 class WordInline(admin.TabularInline):
     model = Word
     extra = 1
+    fields = ("german", "translation", "part_of_speech", "example", "example_translation")
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
@@ -16,6 +17,6 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
-    list_display = ("german", "translation", "lesson")
-    list_filter = ("lesson",)
-    search_fields = ("german", "translation")
+    list_display = ("german", "translation", "part_of_speech", "lesson")
+    list_filter = ("lesson", "part_of_speech")
+    search_fields = ("german", "translation", "example", "example_translation")

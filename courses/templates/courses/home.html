@@ -1,10 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Главная — Deutsch Lernen{% endblock %}
 {% block content %}
-  <h1>Добро пожаловать!</h1>
-  <p>Здесь мы изучаем немецкий язык: уроки, слова и примеры.</p>
+  <div style="display: flex; align-items: center; gap: 2rem;">
+    <div>
+      <h1>Добро пожаловать Папы-Коты!</h1>
+      <p>Здесь мы изучаем немецкий язык.</p>
+      <p>Уроки разбиты на изучение слов и грамматики.</p>
+      <p>Интерактивные игры в разработке.</p>
+    </div>
+    <img src="{% static 'images/mainCat.jpg' %}" alt="Логотип" width="200" style="border-radius: 1rem;">
+  </div>
 
-  <h2>Последние уроки</h2>
+  <h2>Уроки</h2>
   <ul>
     {% for lesson in latest %}
       <li><a href="{% url 'courses:lesson_detail' slug=lesson.slug %}">{{ lesson.title }}</a></li>

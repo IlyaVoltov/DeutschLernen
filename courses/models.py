@@ -22,11 +22,15 @@ class Lesson(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+# класс для слов, связанных с уроками
 class Word(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="words")
     german = models.CharField("Немецкое слово", max_length=120)
     translation = models.CharField("Перевод", max_length=200)
+
+    part_of_speech = models.CharField("Часть речи", max_length=50, blank=True)
     example = models.CharField("Пример", max_length=250, blank=True)
+    example_translation = models.CharField("Перевод примера", max_length=250, blank=True)
 
     class Meta:
         ordering = ["german"]

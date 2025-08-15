@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Тест — {{ lesson.title }}{% endblock %}
+{% block content %}
+  <h1>Тест по уроку: {{ lesson.title }}</h1>
+  {% if error %}
+    <p>{{ error }}</p>
+  {% else %}
+    <p>Выберите правильный перевод для слова <strong>{{ correct.german }}</strong>:</p>
+    <ul>
+      {% for word in words %}
+        <li>
+            <button onclick="checkAnswer('{{ word.translation }}', '{{ correct.translation }}')">{{ word.translation }}</button>
+        </li>
+      {% endfor %}
+    </ul>
+    <p id="result"></p>
+    <script>
+      function checkAnswer(selected, correct) {
+        const result = document.getElementById('result');
+        if (selected === correct) {
+          result.textContent = "Верно!";
+        } else {
+          result.textContent = "Неверно!";
+        }
+      }
+    </script>
+  {% endif %}
+{% endblock %}
