@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — Deutsch Lernen{% endblock %}
+{% block content %}
+  <h1>{{ lesson.title }}</h1>
+  <p>{{ lesson.description }}</p>
+
+  <div class="lesson-text">
+    <p>Это текстовый урок без таблицы слов.</p>
+  </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — Deutsch Lernen{% endblock %}
+{% block content %}
+  <h1>{{ lesson.title }}</h1>
+  <p>{{ lesson.description }}</p>
+
+  <img src="{% static 'images/custom_lesson.jpg' %}" alt="Картинка для урока" width="300">
+
+  <h2>Особенный урок</h2>
+  <p>Здесь можно разместить картинки, интерактивы или кастомные блоки.</p>
+{% endblock %}
