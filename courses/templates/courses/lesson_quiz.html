@@ -27,14 +27,16 @@
     }
 
     function showQuiz() {
-        if (score >= 10) {
-            document.getElementById('quiz').innerHTML = `
-                <strong>Поздравляем! Только настоящий кот может набрать 10 верных ответов!</strong>
-                <br>
-                <img src="/static/images/winnerCat.jpg" alt="Кот победитель" style="max-width:300px;margin-top:1rem;">
-                `;
-            return;
-  }
+      if (score >= 10) {
+        document.getElementById('quiz').innerHTML = `
+          <strong>Поздравляем! Только настоящий кот может набрать 10 верных ответов!</strong>
+          <br>
+          <img src="/static/images/winnerCat.jpg" alt="Кот победитель" style="max-width:300px;margin-top:1rem;">
+          `;
+        // отправляем статистику на сервер
+        postStat(score);
+        return;
+      }
       const {selected, correct} = getRandomWords();
       document.getElementById('quiz').innerHTML = `
         <p>Выберите правильный перевод для слова <strong>${correct.german}</strong>:</p>
@@ -59,6 +61,38 @@
         result.textContent = "";
         showQuiz();
       }, 1000);
+    }
+
+    // получение CSRF-токена из cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    function postStat(correctCount) {
+      const csrftoken = getCookie('csrftoken');
+      fetch(`{% url 'courses:record_quiz_stat' slug=lesson.slug %}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({correct_count: correctCount}),
+      }).then(resp => resp.json()).then(data => {
+        console.log('stat saved', data);
+        // можно перенаправить на страницу статистики
+        window.location.href = `{% url 'courses:quiz_stats' slug=lesson.slug %}`;
+      }).catch(err => console.error(err));
     }
 
     // Показываем первый вопрос

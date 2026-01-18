@@ -1,7 +1,9 @@
 # courses/views.py
 from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_POST
 from django.utils import timezone
-from .models import Lesson
+from .models import Lesson, QuizStat
 import random
 
 
@@ -64,9 +66,36 @@ def lesson_quiz(request, slug):
 
     return render(request, "courses/lesson_quiz.html", {
         "lesson": lesson,
-        "words": words,
+        "words": selected,
         "correct": correct_word,
     })
+
+
+@require_POST
+def record_quiz_stat(request, slug):
+    """Принимает POST с JSON: {"correct_count": 10} и сохраняет запись в QuizStat."""
+    try:
+        data = request.POST or request.body
+        # поддерживаем как form-encoded, так и raw JSON
+        if request.content_type == 'application/json':
+            import json
+            payload = json.loads(request.body.decode())
+            correct = int(payload.get('correct_count', 0))
+        else:
+            correct = int(request.POST.get('correct_count', 0))
+    except Exception:
+        return HttpResponseBadRequest('invalid payload')
+
+    lesson = get_object_or_404(Lesson, slug=slug, published=True)
+    stat = QuizStat.objects.create(lesson=lesson, correct_count=correct)
+    return JsonResponse({"status": "ok", "id": stat.id})
+
+
+def quiz_stats(request, slug):
+    """Отображает список записей статистики по уроку."""
+    lesson = get_object_or_404(Lesson, slug=slug, published=True)
+    stats = lesson.quiz_stats.all()[:100]
+    return render(request, "courses/quiz_stats.html", {"lesson": lesson, "stats": stats})
 
 
 def lesson_example_quiz(request, slug):

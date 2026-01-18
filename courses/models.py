@@ -82,3 +82,18 @@ class Word(models.Model):
 
     def __str__(self):
         return f"{self.german} — {self.translation}"
+
+
+class QuizStat(models.Model):
+    """Статистика по прохождению квизов для урока."""
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="quiz_stats")
+    correct_count = models.PositiveIntegerField("Правильных ответов")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Статистика квиза"
+        verbose_name_plural = "Статистика квизов"
+
+    def __str__(self):
+        return f"{self.lesson.title}: {self.correct_count} @ {self.created_at:%Y-%m-%d %H:%M}"
